@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:notex/modules/editdata_controller.dart';
 import 'package:notex/pages/description.dart';
 import 'package:notex/pages/edit_note.dart';
 import 'package:notex/services/services.dart';
@@ -10,8 +9,6 @@ class NotesTile extends StatelessWidget {
   final dynamic title;
   final String notesData;
   final String noteID;
-
-  final EditController c = Get.put(EditController());
 
   NotesTile(
       {@required this.noteID,
@@ -37,6 +34,7 @@ class NotesTile extends StatelessWidget {
                         builder: (context) => Description(
                               title: title,
                               data: notesData,
+                              imageurl: imageUrl,
                             )));
               },
               child: Container(
@@ -71,12 +69,8 @@ class NotesTile extends StatelessWidget {
                 ),
                 ElevatedButton(
                     onPressed: () {
-                      c.addData(title);
-                      Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (context) => EditNote(),
-                          ));
+                      Get.to(EditNote(),
+                          arguments: [title, notesData, imageUrl, noteID]);
                     },
                     child: Text('edit')),
               ],

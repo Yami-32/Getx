@@ -28,7 +28,7 @@ class Services extends GetxController {
     });
   }
 
-  delete({String id, String imageUrl}) async {
+  void delete({String id, String imageUrl}) async {
     print('delete initated');
     notesRef
         .doc(id)
@@ -38,7 +38,24 @@ class Services extends GetxController {
             ))
         .catchError((e) => print('$e caught error'));
 
+    deleteImage(imageUrl);
+  }
+
+  void deleteImage(String imageUrl) {
     Reference _storage = FirebaseStorage.instance.refFromURL(imageUrl);
     _storage.delete();
+  }
+
+  Future<void> updateData(
+      {String data, String title, String imageUrl, String id}) {
+    return notesRef
+        .doc(id)
+        .update({
+          "image": imageUrl,
+          "title": title,
+          "description": data,
+        })
+        .then((value) => Fluttertoast.showToast(msg: 'updated'))
+        .catchError((e) => print('$e error'));
   }
 }

@@ -1,9 +1,10 @@
 import 'package:flutter/material.dart';
 
 class Description extends StatelessWidget {
-  final String title, data;
+  final String title, data, imageurl;
 
-  const Description({Key key, this.title, this.data}) : super(key: key);
+  const Description({Key key, this.title, this.data, this.imageurl})
+      : super(key: key);
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -14,6 +15,11 @@ class Description extends StatelessWidget {
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
+                Container(
+                  child: Image(
+                    image: NetworkImage(imageurl),
+                  ),
+                ),
                 Center(
                   child: Text(
                     title,

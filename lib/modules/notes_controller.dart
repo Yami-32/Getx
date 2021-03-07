@@ -1,7 +1,6 @@
 import 'package:get/get.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:notex/modules/notesmodel.dart';
-import 'package:notex/services/services.dart';
 
 class NotesConttroller extends GetxController {
   FirebaseFirestore firestore = FirebaseFirestore.instance;

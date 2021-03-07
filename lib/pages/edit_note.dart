@@ -1,7 +1,5 @@
 import 'package:notex/modules/constants.dart';
 import 'package:flutter/material.dart';
-import 'package:fluttertoast/fluttertoast.dart';
-import 'package:notex/modules/editdata_controller.dart';
 import 'package:notex/services/services.dart';
 import 'package:random_string/random_string.dart';
 import 'package:firebase_storage/firebase_storage.dart';
@@ -10,22 +8,18 @@ import 'dart:io';
 import 'package:get/get.dart';
 
 class EditNote extends StatefulWidget {
-  const EditNote({Key key, this.imageUrl, this.title, this.description})
-      : super(key: key);
-
   @override
   _EditNoteState createState() => _EditNoteState();
-  final String imageUrl;
-  final String title;
-  final String description;
 }
 
 class _EditNoteState extends State<EditNote> {
-  final EditController c = Get.put(EditController());
+  String imageUrldat = Get.arguments[2].toString();
+  String docId = Get.arguments[3].toString();
 
   TextEditingController _titleController =
-      TextEditingController(text: '${EditController().title}');
-  TextEditingController _descriptionController = TextEditingController();
+      TextEditingController(text: Get.arguments[0].toString());
+  TextEditingController _descriptionController =
+      TextEditingController(text: Get.arguments[1].toString());
 
   Services services = new Services();
   File selectedImage;
@@ -45,18 +39,9 @@ class _EditNoteState extends State<EditNote> {
   }
 
   void uploadBlog(BuildContext ctx) async {
-    String messgae;
-    if (selectedImage == null) {
-      messgae = 'add Image';
-    } else if (_titleController.text.length == 0) {
-      messgae = 'add title';
-    } else if (_descriptionController.text.length == 0) {
-      messgae = 'add description';
-    }
+    String imageUrlt = imageUrldat;
 
-    if (selectedImage != null &&
-        _titleController.text.length != 0 &&
-        _descriptionController.text.length != 0) {
+    if (selectedImage != null) {
       setState(() {
         _isLoading = true;
       });
@@ -65,23 +50,19 @@ class _EditNoteState extends State<EditNote> {
           .ref()
           .child("notesImages")
           .child("${randomAlphaNumeric(9)}.jpg");
+      Services().deleteImage(imageUrlt);
       final UploadTask task = _storage.putFile(selectedImage);
 
       var imageUrl = await (await task).ref.getDownloadURL();
+      imageUrlt = imageUrl;
       print("this is the usl $imageUrl           the url");
-      Map<String, dynamic> dataMap = {
-        "image": imageUrl,
-        "title": _titleController.text,
-        "description": _descriptionController.text,
-      };
-
-      await services.addData(dataMap);
-      Navigator.pop(context);
-    } else {
-      Fluttertoast.showToast(
-        msg: messgae,
-      );
     }
+    await Services().updateData(
+        imageUrl: imageUrlt,
+        title: _titleController.text,
+        data: _descriptionController.text,
+        id: docId);
+    Get.back();
   }
 
   @override
@@ -119,12 +100,10 @@ class _EditNoteState extends State<EditNote> {
                                   height: 160,
                                   decoration:
                                       BoxDecoration(color: Colors.white),
-                                  child: Center(
-                                    child: Icon(
-                                      Icons.add_a_photo,
-                                      color: Colors.black,
-                                    ),
-                                  )),
+                                  child: Image(
+                                      fit: BoxFit.cover,
+                                      image: NetworkImage(imageUrldat)),
+                                ),
                         ),
                         TextField(
                           controller: _titleController,
