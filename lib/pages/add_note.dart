@@ -22,15 +22,17 @@ class _AddBlogState extends State<AddBlog> {
   final picker = ImagePicker();
 
   Future getImage() async {
-    final pickedFile = await picker.getImage(source: ImageSource.gallery);
-
-    setState(() {
-      if (pickedFile != null) {
+    Fluttertoast.showToast(msg: 'gallery open');
+    try {
+      final pickedFile = await picker.getImage(source: ImageSource.gallery);
+      Fluttertoast.showToast(msg: 'image picked');
+      setState(() {
         selectedImage = File(pickedFile.path);
-      } else {
-        print('No image selected.');
-      }
-    });
+        Fluttertoast.showToast(msg: 'image added');
+      });
+    } catch (e) {
+      Fluttertoast.showToast(msg: e);
+    }
   }
 
   void uploadBlog(BuildContext ctx) async {
@@ -91,6 +93,7 @@ class _AddBlogState extends State<AddBlog> {
                       children: <Widget>[
                         GestureDetector(
                           onTap: () {
+                            Fluttertoast.showToast(msg: 'tapped');
                             getImage();
                           },
                           child: selectedImage != null
